@@ -55,7 +55,6 @@ async def on_member_join(member:discord.Member) -> None:
         await displaywarning(client.get_channel(AUTOMODCHANNELID), "Suspicious nickname detected",
                              [["`Nicknamed`", member.display_name],
                               ["`Truly`", member.name]])
-        await client.get_channel(AUTOMODCHANNELID).send(f"Suspicious nickname detected: {member.mention} ({member.name})")
 
     return
 
@@ -65,7 +64,6 @@ async def on_member_update(before:discord.Member, after:discord.Member) -> None:
         await displaywarning(client.get_channel(AUTOMODCHANNELID), "Suspicious nickname detected", [["`Now`", after.display_name],
                                                                                                     ["`Formerly`", before.display_name],
                                                                                                     ["`Truly`", after.name]])
-        await client.get_channel(AUTOMODCHANNELID).send(f"Suspicious nickname detected: {after.mention} (formerly {before.display_name}, truly {after.name})")
 
 @client.event
 async def on_ready() -> None:
