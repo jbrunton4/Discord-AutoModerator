@@ -48,6 +48,20 @@ async def displaywarning(channel:discord.TextChannel, Desc:str = "", Fields:list
 
     await channel.send(embed=embed)
 
+async def displayembed(channel:discord.TextChannel, Title:str = "", Desc:str = "", Fields:list = [], Footer:str = "") -> None:
+    embed = discord.Embed(
+        title = Title,
+        description = Desc,
+        colour = discord.Colour.blue()
+    )
+
+    embed.set_footer(text=Footer)
+
+    for x in Fields:
+        embed.add_field(name = x[0], value=x[1])
+
+    await channel.send(embed=embed)
+
 
 @client.event
 async def on_member_join(member:discord.Member) -> None:
@@ -77,10 +91,16 @@ async def on_message(message) -> None: # I don't know how to use discord.ext.Bot
     global prohibited_words
 
     if message.content.lower().startswith(f"{cmd_prefix}setprefix "):
+
+        old = cmd_prefix
+
         cmd_prefix = message.content.split()[1]
         fh = open("cmd_prefix.txt", "w")
         fh.write(cmd_prefix)
         fh.close()
+
+        await displayembed(message.channel, "INFORMATION", "Command prefix changed", [["`From`", old],
+                                                                                      ["`To`", cmd_prefix]])
 
         await message.channel.send(f"Set prefix to {cmd_prefix}")
         await client.change_presence(status=discord.Status.online, activity=discord.Game(f"Prefix: {cmd_prefix}"))
@@ -98,7 +118,26 @@ async def on_message(message) -> None: # I don't know how to use discord.ext.Bot
         prohibited_words = fh.read().split()
         fh.close()
 
-        await message.channel.send(f"Added {message.content.replace(f'{cmd_prefix}prohibit', '')} to prohibited words.")
+        await displayembed(message.channel, "INFORMATION", "Added a new prohibited word", [["`New word`", message.content.replace(f'{cmd_prefix}prohibit', '')],
+                                                                                      ["`Set by`", message.author.mention]])
+
+        return
+
+    elif message.content.lower().startswith(f"{cmd_prefix}allow "):
+
+        fh = open("prohibited_words.txt", "r")
+        old = fh.read()
+        fh.close()
+
+        new = old.replace(((message.content.replace(f"{cmd_prefix}allow ", "").strip()) + " "), "")
+
+        fh = open("prohibited_words.txt", "w")
+        fh.write(new)
+        fh.close()
+
+        await displayembed(message.channel, "INFORMATION", "Removed a prohibited word",
+                           [["`Newly allowed word`", message.content.replace(f'{cmd_prefix}allow ', '')],
+                            ["`Allowed by`", message.author.mention]])
 
         return
 
