@@ -90,7 +90,14 @@ async def on_message(message) -> None: # I don't know how to use discord.ext.Bot
     global cmd_prefix
     global prohibited_words
 
-    if message.content.lower().startswith(f"{cmd_prefix}setprefix "):
+    if message.content.lower().startswith(f"{cmd_prefix}help"):
+        await displayembed(message.channel, "HELP", "Help menu for nickname checker", [["`help`", "Displays this menu"],
+                                                                                        ["`setprefix [x]`", "Sets the command prefix to `[x]`"],
+                                                                                        ["`prohibit [word]`", "Prohibits `[word]` in nicknames."],
+                                                                                        ["`allow [word]`", "Remove `[word]` from prohibited words."]],
+                                                                                        f"Reminder: The command prefix is `{cmd_prefix}`")
+
+    elif message.content.lower().startswith(f"{cmd_prefix}setprefix "):
 
         old = cmd_prefix
 
